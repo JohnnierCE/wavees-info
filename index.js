@@ -29,23 +29,20 @@ async function consultarTodasLasAPIs() {
                 }
             });
 
-            // Recorrer todos los arrays y juntar los canales con fallas (ej: aquellos que contengan "(0)")
-            let canalesConFallas = [];
+            let canales = [];
+
             data.forEach(item => {
                 if (Array.isArray(item) && item.length > 0) {
                     item.forEach(canal => {
-                        // Ajusta la condición según cómo se identifiquen las fallas
-                        if (canal.includes("(0)")) {
-                            canalesConFallas.push(canal);
-                        }
+                        canales.push(canal);
                     });
                 }
             });
 
-            if (canalesConFallas.length > 0) {
-                mensajes.push(`*${pais.nombre}*:\n${canalesConFallas.join("\n")}`);
+            if (canales.length > 0) {
+                mensajes.push(`*${pais.nombre}*:\n${canales.join("\n")}`);
             } else {
-                mensajes.push(`*${pais.nombre}*:\nNo hay fallas`);
+                mensajes.push(`*${pais.nombre}*:\nNo hay datos válidos`);
             }
 
         } catch (error) {
