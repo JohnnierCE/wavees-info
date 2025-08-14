@@ -1,0 +1,12 @@
+{
+  "name": "wavees-info",
+  "version": "1.0.0",
+  "description": "Consulta API de estado WAV feed y envía a Telegram",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
