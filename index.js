@@ -15,7 +15,7 @@ const PAISES = [
         url: "https://co.integra-metrics.com/api/v2/estado-soft?data=%7B%7D",
         token: "784531556743bc5d76129cfc057413dd73563372e896da054ed5e2856e760c20f90943f8b7deaa28ed7b3d559141329838955b1140a921d255af1e038cf917ed"
     },
-    // Agregar los otros 6 países aquí con su nombre, url y token
+    // Agrega aquí los otros 6 países...
 ];
 
 async function consultarTodasLasAPIs() {
@@ -34,18 +34,19 @@ async function consultarTodasLasAPIs() {
 
             if (arraysValidos.length > 0) {
                 const ultimoArray = arraysValidos[arraysValidos.length - 1];
-                mensajes.push(`${pais.nombre}: ${ultimoArray.join(", ")}`);
+                mensajes.push(`*${pais.nombre}*: ${ultimoArray.join("\n")}`);
             } else {
-                mensajes.push(`${pais.nombre}: No hay datos válidos`);
+                mensajes.push(`*${pais.nombre}*: No hay datos válidos`);
             }
 
         } catch (error) {
-            mensajes.push(`${pais.nombre}: Error al consultar API (${error.message})`);
+            mensajes.push(`*${pais.nombre}*: Error al consultar API (${error.message})`);
         }
     }
 
     if (mensajes.length > 0) {
-        await enviarTelegram(mensajes.join("\n"));
+        // Unir mensajes con doble salto de línea para dejar espacio entre países
+        await enviarTelegram(mensajes.join("\n\n"));
         console.log("Mensaje enviado a Telegram");
     }
 }
@@ -55,7 +56,8 @@ async function enviarTelegram(texto) {
         const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
         await axios.post(url, {
             chat_id: CHAT_ID,
-            text: texto
+            text: texto,
+            parse_mode: "Markdown"
         });
     } catch (error) {
         console.error("Error enviando mensaje a Telegram:", error.message);
