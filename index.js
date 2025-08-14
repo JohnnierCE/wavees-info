@@ -29,20 +29,21 @@ async function consultarTodasLasAPIs() {
                 }
             });
 
-            let canales = [];
+            const arraysValidos = data.filter(item => Array.isArray(item) && item.length > 0);
 
-            data.forEach(item => {
-                if (Array.isArray(item) && item.length > 0) {
-                    item.forEach(canal => {
-                        canales.push(canal);
-                    });
-                }
-            });
-
-            if (canales.length > 0) {
-                mensajes.push(`*${pais.nombre}*:\n${canales.join("\n")}`);
+            if (arraysValidos.length === 0) {
+                mensajes.push(`*${pais.nombre}*: ESTABLE`);
             } else {
-                mensajes.push(`*${pais.nombre}*:\nNo hay datos válidos`);
+                const todosCanales = [].concat(...arraysValidos);
+
+                // Canales con fallas: paréntesis distinto a (1)
+                const canalesConFallas = todosCanales.filter(canal => /\(\d+\)/.test(canal) && !canal.includes("(1)"));
+
+                if (canalesConFallas.length === 0) {
+                    mensajes.push(`*${pais.nombre}*: ESTABLE`);
+                } else {
+                    mensajes.push(`*${pais.nombre}*:\n${canalesConFallas.join("\n")}`);
+                }
             }
 
         } catch (error) {
