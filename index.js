@@ -34,13 +34,13 @@ async function consultarTodasLasAPIs() {
 
             if (arraysValidos.length > 0) {
                 const ultimoArray = arraysValidos[arraysValidos.length - 1];
-                mensajes.push(`*${pais.nombre}*: ${ultimoArray.join("\n")}`);
+                mensajes.push(`*${pais.nombre}*:\n${ultimoArray.join("\n")}`);
             } else {
-                mensajes.push(`*${pais.nombre}*: No hay datos válidos`);
+                mensajes.push(`*${pais.nombre}*:\nNo hay datos válidos`);
             }
 
         } catch (error) {
-            mensajes.push(`*${pais.nombre}*: Error al consultar API (${error.message})`);
+            mensajes.push(`*${pais.nombre}*:\nError al consultar API (${error.message})`);
         }
     }
 
