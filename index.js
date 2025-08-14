@@ -15,8 +15,11 @@ const PAISES = [
         url: "https://co.integra-metrics.com/api/v2/estado-soft?data=%7B%7D",
         token: "784531556743bc5d76129cfc057413dd73563372e896da054ed5e2856e760c20f90943f8b7deaa28ed7b3d559141329838955b1140a921d255af1e038cf917ed"
     },
-    // Agrega aquí los otros 6 países...
-];
+    {
+        nombre: "SV",
+        url: "https://sv.integra-metrics.com/api/v2/estado-soft?data=%7B%7D",
+        token: "8d37362ef1bc9e77e6b4937584dd88706581031ca9c659403c31b915dad9f392373e9f9a26bd21fde4f0b145aa6b3ba1ceccb6333b582b02af81b5415d119287"
+        ];
 
 async function consultarTodasLasAPIs() {
     let mensajes = [];
