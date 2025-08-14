@@ -19,6 +19,7 @@ const PAISES = [
         nombre: "SV",
         url: "https://sv.integra-metrics.com/api/v2/estado-soft?data=%7B%7D",
         token: "8d37362ef1bc9e77e6b4937584dd88706581031ca9c659403c31b915dad9f392373e9f9a26bd21fde4f0b145aa6b3ba1ceccb6333b582b02af81b5415d119287"
+    }
         ];
 
 async function consultarTodasLasAPIs() {
