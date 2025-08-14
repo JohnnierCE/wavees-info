@@ -17,6 +17,10 @@ const PAISES = [
     { nombre: "UY", url: "https://uy.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "759361d51187fe9dbd526e0219a098b92d05249b29ee69778fb11e9e70cf7bdacec61f4e5b195d32948c5ba1b35dbb239a7286a69a687cbfe055d380a9209013" }
 ];
 
+function escapeMarkdown(text) {
+    return text.replace(/([_*[\]()~`>#+-=|{}.!])/g, "\\$1");
+}
+
 async function consultarTodasLasAPIs() {
     let mensajes = [];
 
@@ -30,24 +34,16 @@ async function consultarTodasLasAPIs() {
             });
 
             const arraysValidos = data.filter(item => Array.isArray(item) && item.length > 0);
+            const ultimoArray = arraysValidos.length > 0 ? arraysValidos[arraysValidos.length - 1] : [];
 
-            if (arraysValidos.length === 0) {
-                mensajes.push(`*${pais.nombre}*: ESTABLE`);
+            if (ultimoArray.length === 0) {
+                mensajes.push(`*${pais.nombre}*:\nEstable ✅`);
             } else {
-                const todosCanales = [].concat(...arraysValidos);
-
-                // Canales con fallas: paréntesis distinto a (1)
-                const canalesConFallas = todosCanales.filter(canal => /\(\d+\)/.test(canal) && !canal.includes("(1)"));
-
-                if (canalesConFallas.length === 0) {
-                    mensajes.push(`*${pais.nombre}*: ESTABLE`);
-                } else {
-                    mensajes.push(`*${pais.nombre}*:\n${canalesConFallas.join("\n")}`);
-                }
+                mensajes.push(`*${pais.nombre}*:\n${ultimoArray.map(escapeMarkdown).join("\n")}`);
             }
 
         } catch (error) {
-            mensajes.push(`*${pais.nombre}*:\nError al consultar API (${error.message})`);
+            mensajes.push(`*${pais.nombre}*:\nError al consultar API (${escapeMarkdown(error.message)})`);
         }
     }
 
@@ -63,15 +59,12 @@ async function enviarTelegram(texto) {
         await axios.post(url, {
             chat_id: CHAT_ID,
             text: texto,
-            parse_mode: "Markdown"
+            parse_mode: "MarkdownV2"
         });
     } catch (error) {
         console.error("Error enviando mensaje a Telegram:", error.message);
     }
 }
 
-// Ejecutar cada 5 minutos
 setInterval(consultarTodasLasAPIs, 300000);
-
-// Primera ejecución inmediata
 consultarTodasLasAPIs();
