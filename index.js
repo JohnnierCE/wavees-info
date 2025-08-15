@@ -23,17 +23,13 @@ function toGB(bytes) {
 
 async function consultarPais(pais) {
     try {
-        // Obtener canales
         const softResp = await axios.get(pais.url, {
             headers: { "Authorization": `Bearer ${pais.token}`, "Accept": "application/json" }
         });
 
         const canales = Array.isArray(softResp.data[pais.indice]) ? softResp.data[pais.indice] : [];
-
-        // Revisar índice 6 para UTIL
         const indice6 = Array.isArray(softResp.data[6]) ? softResp.data[6][0] : null;
 
-        // Obtener estado de discos
         const feedsResp = await axios.get(`https://${pais.nombre.toLowerCase()}.integra-metrics.com/api/v2/estado-feeds?data={"time":"1 hours"}`, {
             headers: { "Authorization": `Bearer ${pais.token}`, "Accept": "application/json" }
         });
@@ -59,11 +55,11 @@ async function consultarPais(pais) {
         } else if (indice6 === "1") {
             textoPais += `${pais.nombre}:\nUTIL: 1`;
         } else {
-            textoPais += `${pais.nombre}: TODO ESTABLE ✅`;
+            textoPais += `${pais.nombre}:\nTODO ESTABLE ✅`;
         }
 
         if (alertas.length > 0) {
-            textoPais += "\n\n" + alertas.join("\n");
+            textoPais += "\n" + alertas.join("\n"); // <- solo 1 línea antes de alertas
         }
 
         textoPais += "\n---------------------------";
@@ -95,8 +91,5 @@ async function enviarTelegram(texto) {
     }
 }
 
-// Ejecutar cada 5 minutos
 setInterval(ejecutarPrueba, 300000);
-
-// Primera ejecución inmediata
 ejecutarPrueba();
