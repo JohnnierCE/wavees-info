@@ -35,7 +35,7 @@ async function consultarPais(pais) {
         // Revisar índice 6 para UTIL
         const indice6 = Array.isArray(softResp.data[6]) ? softResp.data[6][0] : null;
         if (indice6 === "1") {
-            canalesTexto += "\n⚠️\n*UTIL: 1*\n⚠️";
+            canalesTexto += `\n\n*UTIL: 1*\n\n`;
         }
 
         // Obtener estado de discos
@@ -57,10 +57,10 @@ async function consultarPais(pais) {
             const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
             if (secundarioLibre < 5) alertasPC.push(`FEED ${pc.id_pc} 💽 - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
 
-            // Si hay alertas, poner el ⚠️ arriba y abajo
+            // Si hay alertas, solo agregar una línea vacía arriba y abajo
             if (alertasPC.length > 0) {
-                alertasPC.unshift("⚠️"); // arriba
-                alertasPC.push("⚠️");    // abajo
+                alertasPC.unshift(""); // línea vacía arriba
+                alertasPC.push("");    // línea vacía abajo
             }
 
             return alertasPC;
