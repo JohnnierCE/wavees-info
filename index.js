@@ -33,20 +33,29 @@ async function consultarPais(pais) {
             .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
             .reduce((acc, curr) => { if (!acc[curr.id_pc]) acc[curr.id_pc] = curr; return acc; }, {});
 
-        const discosTexto = Object.values(latestPerPc).map(pc => {
+        // Analizar alertas
+        const alertas = Object.values(latestPerPc).filter(pc => {
             const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
-            const primarioTotal = toGB(pc.primary_disk_total);
-            const primarioStatus = primarioLibre >= 10 ? "OK" : "ALERTA";
-
             const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
-            const secundarioTotal = toGB(pc.secondary_disk_total);
-            const secundarioStatus = secundarioLibre >= 5 ? "OK" : "ALERTA";
+            return primarioLibre < 10 || secundarioLibre < 5;
+        });
 
-            const ramLibre = toGB(pc.ram_total - pc.ram_used);
-            const inodos = (100 - pc.inodes_free).toFixed(2);
+        const discosTexto = alertas.length > 0 
+            ? alertas.map(pc => {
+                const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
+                const primarioTotal = toGB(pc.primary_disk_total);
+                const primarioStatus = primarioLibre >= 10 ? "OK" : "ALERTA";
 
-            return `- PC ${pc.id_pc}: Primario ${primarioStatus} (${primarioLibre}/${primarioTotal} GB), Secundario ${secundarioStatus} (${secundarioLibre}/${secundarioTotal} GB), RAM libre ${ramLibre} GB, Inodos ${inodos}%`;
-        }).join("\n");
+                const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
+                const secundarioTotal = toGB(pc.secondary_disk_total);
+                const secundarioStatus = secundarioLibre >= 5 ? "OK" : "ALERTA";
+
+                const ramLibre = toGB(pc.ram_total - pc.ram_used);
+                const inodos = (100 - pc.inodes_free).toFixed(2);
+
+                return `- PC ${pc.id_pc}: Primario ${primarioStatus} (${primarioLibre}/${primarioTotal} GB), Secundario ${secundarioStatus} (${secundarioLibre}/${secundarioTotal} GB), RAM libre ${ramLibre} GB, Inodos ${inodos}%`;
+            }).join("\n")
+            : "DISCOS OK";
 
         return `*${pais.nombre}*:\n${canalesTexto}\n\nEstado discos:\n${discosTexto}`;
 
