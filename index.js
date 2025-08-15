@@ -59,11 +59,11 @@ async function consultarTodasLasAPIs() {
 async function enviarTelegram(texto) {
   try {
     const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
-    await axios.post(url, {
-      chat_id: CHAT_ID,
-      text,
-      parse_mode: "MarkdownV2",
-    });
+   await axios.post(url, {
+  chat_id: CHAT_ID,
+  text: texto,
+  parse_mode: "MarkdownV2",
+});
   } catch (error) {
     console.error("Error enviando mensaje a Telegram:", error.message);
   }
