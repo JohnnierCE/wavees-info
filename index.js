@@ -17,9 +17,10 @@ const PAISES = [
     { nombre: "UY", url: "https://uy.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "759361d51187fe9dbd526e0219a098b92d05249b29ee69778fb11e9e70cf7bdacec61f4e5b195d32948c5ba1b35dbb239a7286a69a687cbfe055d380a9209013" }
 ];
 
-// Escapar caracteres especiales de MarkdownV2
+// Función para escapar Markdown
 function escapeMarkdown(text) {
-    return text.replace(/([_*[\]()~`>#+\-=|{}.!])/g, "\\$1");
+    if (!text) return "";
+    return text.toString().replace(/([_*[\]()~`>#+\-=|{}.!])/g, "\\$1");
 }
 
 async function consultarTodasLasAPIs() {
@@ -35,13 +36,12 @@ async function consultarTodasLasAPIs() {
             });
 
             const arraysValidos = data.filter(item => Array.isArray(item) && item.length > 0);
-            const todosCanales = [].concat(...arraysValidos);
+            const todosCanales = [].concat(...arraysValidos).filter(Boolean);
 
-            // Canales con fallas (cualquier número distinto de 1)
             const canalesConFallas = todosCanales.filter(canal => /\(\d+\)/.test(canal) && !canal.includes("(1)"));
 
             if (canalesConFallas.length === 0) {
-                mensajes.push(`*${escapeMarkdown(pais.nombre)}*: OK`);
+                mensajes.push(`*${escapeMarkdown(pais.nombre)}*: ESTABLE`);
             } else {
                 mensajes.push(`*${escapeMarkdown(pais.nombre)}*:\n${canalesConFallas.map(c => escapeMarkdown(c)).join("\n")}`);
             }
@@ -51,8 +51,9 @@ async function consultarTodasLasAPIs() {
         }
     }
 
-    if (mensajes.length > 0) {
-        await enviarTelegram(mensajes.join("\n\n"));
+    const textoFinal = mensajes.filter(m => m && m.trim() !== "").join("\n\n");
+    if (textoFinal) {
+        await enviarTelegram(textoFinal);
         console.log("Mensaje enviado a Telegram");
     }
 }
