@@ -24,7 +24,7 @@ async function enviarCanalesConFallas() {
     });
 
     // Tomamos solo el índice 0 (canales con fallas)
-    const canalesConFallas = Array.isArray(data[1]) ? data[1] : [];
+    const canalesConFallas = Array.isArray(data[2]) ? data[2] : [];
 
     const mensaje =
       canalesConFallas.length > 0
