@@ -35,7 +35,7 @@ async function consultarPais(pais) {
         // Chequear índice 6 para UTIL
         const indice6 = softResp.data[6]; // esto puede ser ["1"]
         if (Array.isArray(indice6) && indice6.includes("1")) {
-            canalesTexto += `\nUTIL: 1`;
+            canalesTexto += `\n*UTIL: 1*`;
         }
 
         // Obtener estado de discos
