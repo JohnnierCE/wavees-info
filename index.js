@@ -35,7 +35,7 @@ async function consultarPais(pais) {
         // Revisar índice 6 para UTIL
         const indice6 = Array.isArray(softResp.data[6]) ? softResp.data[6][0] : null;
         if (indice6 === "1") {
-            canalesTexto += "\n------------\n*UTIL: 1*";
+            canalesTexto += "\n-⚠️\n*UTIL: 1*";
         }
 
         // Obtener estado de discos
@@ -59,7 +59,7 @@ async function consultarPais(pais) {
 
             // Agregar separador si hay alertas en este FEED
             if (alertasPC.length > 0) {
-                alertasPC.unshift("------------");
+                alertasPC.unshift("⚠️");
             }
 
             return alertasPC;
