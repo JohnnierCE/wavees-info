@@ -32,10 +32,10 @@ async function consultarPais(pais) {
         const canales = Array.isArray(softResp.data[pais.indice]) ? softResp.data[pais.indice] : [];
         let canalesTexto = canales.length > 0 ? canales.join("\n") : "TODO ESTABLE";
 
-        // Chequear índice 6 para UTIL
-        const indice6 = softResp.data[6]; // esto puede ser ["1"]
-        if (Array.isArray(indice6) && indice6.includes("1")) {
-            canalesTexto += `\n*UTIL: 1*`;
+        // Revisar índice 6 para UTIL
+        const indice6 = Array.isArray(softResp.data[6]) ? softResp.data[6][0] : null;
+        if (indice6 === "1") {
+            canalesTexto += "\n------------\n*UTIL: 1*";
         }
 
         // Obtener estado de discos
@@ -56,6 +56,11 @@ async function consultarPais(pais) {
 
             const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
             if (secundarioLibre < 5) alertasPC.push(`*FEED ${pc.id_pc}* 💽 - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
+
+            // Agregar separador si hay alertas en este FEED
+            if (alertasPC.length > 0) {
+                alertasPC.unshift("------------");
+            }
 
             return alertasPC;
         }).flat().filter(Boolean);
