@@ -5,7 +5,7 @@ const CHAT_ID = "5703312558";
 
 // Lista de APIs con índice configurable
 const PAISES = [
-    { nombre: "RD", url: "https://rd.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "7c0a5d5e456db8b238879426b52d504ecd087a98c574d69d63ffb3868cf6f9b8c30ff4fbda7a265c91e70769b90497c07335cb02d0af8eca7f94a724103aaa80", indice: 3 },
+    { nombre: "RD", url: "https://rd.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "7c0a5d5e456db8b238879426b52d504ecd087a98c574d69d63ffb3868cf6f9b8c30ff4fbda7a265c91e70769b90497c07335cb02d0af8eca7f94a724103aaa80", indice: 1 },
     { nombre: "CO", url: "https://co.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "784531556743bc5d76129cfc057413dd73563372e896da054ed5e2856e760c20f90943f8b7deaa28ed7b3d559141329838955b1140a921d255af1e038cf917ed", indice: 3 },
     { nombre: "SV", url: "https://sv.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "8d37362ef1bc9e77e6b4937584dd88706581031ca9c659403c31b915dad9f392373e9f9a26bd21fde4f0b145aa6b3ba1ceccb6333b582b02af81b5415d119287", indice: 3 },
     { nombre: "CR", url: "https://cr.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "06dfd57a8c27831a6577d5eebc7a1564b9db49c9c0664911ba1a5c823e88da3cb08879845da34604981af81e6dcc93988ce6d689041f2f89c3e71461e0940598", indice: 3 },
