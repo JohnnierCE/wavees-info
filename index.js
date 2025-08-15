@@ -30,7 +30,12 @@ async function consultarPais(pais) {
         });
 
         const canales = Array.isArray(softResp.data[pais.indice]) ? softResp.data[pais.indice] : [];
-        const canalesTexto = canales.length > 0 ? canales.join("\n") : "TODO ESTABLE";
+        let canalesTexto = canales.length > 0 ? canales.join("\n") : "TODO ESTABLE";
+
+        // Revisar índice 6 para UTIL
+        if (softResp.data[6] === "1" || softResp.data[6] === 1) {
+            canalesTexto += `\nUTIL: 1`;
+        }
 
         // Obtener estado de discos
         const feedsResp = await axios.get(`https://${pais.nombre.toLowerCase()}.integra-metrics.com/api/v2/estado-feeds?data={"time":"1 hours"}`, {
