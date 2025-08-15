@@ -82,7 +82,7 @@ async function enviarTelegram(texto) {
 }
 
 // Ejecutar cada 5 minutos
-setInterval(consultarTodasLasAPIs, 300000);
+setInterval(ejecutarPrueba, 300000);
 
 // Primera ejecución inmediata
-consultarTodasLasAPIs();
+ejecutarPrueba();
