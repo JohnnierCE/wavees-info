@@ -3,6 +3,7 @@ const axios = require("axios");
 const TELEGRAM_TOKEN = "8308992460:AAHoSoA9rWhHJCt9FuX2RkdBCVhmdnSX6d8";
 const CHAT_ID = "5703312558";
 
+// Lista de APIs con índice definido
 const PAISES = [
     { nombre: "RD", url: "https://rd.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "7c0a5d5e456db8b238879426b52d504ecd087a98c574d69d63ffb3868cf6f9b8c30ff4fbda7a265c91e70769b90497c07335cb02d0af8eca7f94a724103aaa80", indice: 3 },
     { nombre: "CO", url: "https://co.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "784531556743bc5d76129cfc057413dd73563372e896da054ed5e2856e760c20f90943f8b7deaa28ed7b3d559141329838955b1140a921d255af1e038cf917ed", indice: 3 },
@@ -18,9 +19,7 @@ const PAISES = [
 ];
 
 async function consultarTodasLasAPIs() {
-    let labels = [];
-    let valores = [];
-    let textLabels = [];
+    let mensajes = [];
 
     for (const pais of PAISES) {
         try {
@@ -31,63 +30,37 @@ async function consultarTodasLasAPIs() {
                 }
             });
 
+            // Verifica si el índice definido existe
             const subarray = Array.isArray(data[pais.indice]) ? data[pais.indice] : [];
 
-            labels.push(pais.nombre);
-
-            if(subarray.length === 0){
-                valores.push(1); // verde
-                textLabels.push("Todo Estable");
-            } else {
-                valores.push(0); // rojo
-                textLabels.push(subarray.join("\n")); // muestra canales malos
-            }
+            mensajes.push(`*${pais.nombre}*:\n${subarray.join("\n") || "Todo Estable"}`);
 
         } catch (error) {
-            labels.push(pais.nombre);
-            valores.push(0);
-            textLabels.push("Error API");
+            mensajes.push(`*${pais.nombre}*:\nError al consultar API (${error.message})`);
         }
     }
 
-    const chartConfig = {
-        type: 'matrix',
-        data: {
-            datasets: [{
-                label: 'Estados',
-                data: valores.map((v,i) => ({x:i, y:0, v: v, t: textLabels[i]})),
-                backgroundColor: context => context.dataset.data[context.dataIndex].v ? 'green' : 'red',
-            }]
-        },
-        options: {
-            tooltips: {
-                callbacks: {
-                    label: context => context.dataset.data[context.dataIndex].t
-                }
-            },
-            scales: {
-                x: { ticks: { callback: i => labels[i] } },
-                y: { display: false }
-            }
-        }
-    };
-
-    const quickchartURL = `https://quickchart.io/chart?c=${encodeURIComponent(JSON.stringify(chartConfig))}`;
-
-    await enviarTelegram(quickchartURL);
+    if (mensajes.length > 0) {
+        await enviarTelegram(mensajes.join("\n\n"));
+        console.log("Mensaje enviado a Telegram");
+    }
 }
 
-async function enviarTelegram(urlImagen) {
+async function enviarTelegram(texto) {
     try {
-        const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`;
-        await axios.post(telegramUrl, {
+        const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+        await axios.post(url, {
             chat_id: CHAT_ID,
-            photo: urlImagen
+            text: texto,
+            parse_mode: "Markdown"
         });
     } catch (error) {
-        console.error("Error enviando imagen a Telegram:", error.message);
+        console.error("Error enviando mensaje a Telegram:", error.message);
     }
 }
 
+// Ejecutar cada 5 minutos
 setInterval(consultarTodasLasAPIs, 300000);
+
+// Primera ejecución inmediata
 consultarTodasLasAPIs();
