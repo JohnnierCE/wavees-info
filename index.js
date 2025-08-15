@@ -14,7 +14,7 @@ function escapeMarkdownV2(text) {
   return text.replace(/([_*\[\]()~`>#+\-=|{}.!])/g, "\\$1");
 }
 
-async function enviarCanalesIndice1() {
+async function enviarCanalesConFallas() {
   try {
     const { data } = await axios.get(GT_API.url, {
       headers: {
@@ -23,13 +23,13 @@ async function enviarCanalesIndice1() {
       },
     });
 
-    // Tomamos solo el índice 1
-    const canalesIndice1 = Array.isArray(data[1]) ? data[1] : [];
+    // Tomamos solo el índice 0 (canales con fallas)
+    const canalesConFallas = Array.isArray(data[1]) ? data[1] : [];
 
     const mensaje =
-      canalesIndice1.length > 0
-        ? `*${escapeMarkdownV2(GT_API.nombre)}* - Índice 1:\n${canalesIndice1.map(escapeMarkdownV2).join("\n")}`
-        : `*${escapeMarkdownV2(GT_API.nombre)}* - Índice 1: No hay datos`;
+      canalesConFallas.length > 0
+        ? `*${escapeMarkdownV2(GT_API.nombre)}*:\n${canalesConFallas.map(escapeMarkdownV2).join("\n")}`
+        : `*${escapeMarkdownV2(GT_API.nombre)}*: No hay fallas`;
 
     // Enviar a Telegram
     const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
@@ -46,4 +46,4 @@ async function enviarCanalesIndice1() {
 }
 
 // Ejecutar
-enviarCanalesIndice1();
+enviarCanalesConFallas();
