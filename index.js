@@ -33,7 +33,7 @@ async function consultarTodasLasAPIs() {
             // Verifica si el índice definido existe
             const subarray = Array.isArray(data[pais.indice]) ? data[pais.indice] : [];
 
-            mensajes.push(`*${pais.nombre}*:\n${subarray.join("\n") || "Todo Estable"}`);
+            mensajes.push(`*${pais.nombre}*:\n${subarray.join("\n") || "TODO ESTABLE"}`);
 
         } catch (error) {
             mensajes.push(`*${pais.nombre}*:\nError al consultar API (${error.message})`);
