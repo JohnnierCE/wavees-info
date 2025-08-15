@@ -46,7 +46,7 @@ async function consultarPais(pais) {
         const alertas = Object.values(latestPerPc).map(pc => {
             const alertasPC = [];
             const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
-            if (primarioLibre < 10) alertasPC.push(`*FEED ${pc.id_pc}* - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
+            if (primarioLibre < 10) alertasPC.push(`💽*FEED ${pc.id_pc}* - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
 
             const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
             if (secundarioLibre < 5) alertasPC.push(`💽*FEED ${pc.id_pc}* - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
