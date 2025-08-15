@@ -4,7 +4,7 @@ const TELEGRAM_TOKEN = "8308992460:AAHoSoA9rWhHJCt9FuX2RkdBCVhmdnSX6d8";
 const CHAT_ID = "5703312558";
 
 const PAIS = {
-    nombre: "RD",
+    nombre: "*RD*",
     token: "7c0a5d5e456db8b238879426b52d504ecd087a98c574d69d63ffb3868cf6f9b8c30ff4fbda7a265c91e70769b90497c07335cb02d0af8eca7f94a724103aaa80",
     indice: 3
 };
@@ -39,12 +39,12 @@ async function consultarPais(pais) {
             const alertasPC = [];
             const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
             if (primarioLibre < 10) {
-                alertasPC.push(`*FEED ${pc.id_pc}* - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
+                alertasPC.push(`*FEED* ${pc.id_pc}* - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
             }
 
             const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
             if (secundarioLibre < 5) {
-                alertasPC.push(`*FEED ${pc.id_pc}* - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
+                alertasPC.push(`*FEED* ${pc.id_pc}* - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
             }
 
             return alertasPC;
