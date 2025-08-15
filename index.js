@@ -29,13 +29,12 @@ async function consultarPais(pais) {
             headers: { "Authorization": `Bearer ${pais.token}`, "Accept": "application/json" }
         });
 
-        // Canales principales
         const canales = Array.isArray(softResp.data[pais.indice]) ? softResp.data[pais.indice] : [];
         let canalesTexto = canales.length > 0 ? canales.join("\n") : "TODO ESTABLE";
 
-        // Revisar índice 6 y agregar UTIL: 1 si corresponde
-        const indice6 = Array.isArray(softResp.data) ? softResp.data[6] : softResp.data[6];
-        if (indice6 === "1" || indice6 === 1) {
+        // Chequear índice 6 para UTIL
+        const indice6 = softResp.data[6]; // esto puede ser ["1"]
+        if (Array.isArray(indice6) && indice6.includes("1")) {
             canalesTexto += `\nUTIL: 1`;
         }
 
