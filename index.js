@@ -49,7 +49,7 @@ async function consultarPais(pais) {
             if (primarioLibre < 10) alertasPC.push(`*FEED ${pc.id_pc}* - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
 
             const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
-            if (secundarioLibre < 5) alertasPC.push(`*FEED ${pc.id_pc}* - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
+            if (secundarioLibre < 5) alertasPC.push(`💽*FEED ${pc.id_pc}* - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
 
             return alertasPC;
         }).flat().filter(Boolean);
