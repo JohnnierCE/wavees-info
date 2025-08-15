@@ -17,7 +17,7 @@ const PAISES = [
     { nombre: "UY", url: "https://uy.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "759361d51187fe9dbd526e0219a098b92d05249b29ee69778fb11e9e70cf7bdacec61f4e5b195d32948c5ba1b35dbb239a7286a69a687cbfe055d380a9209013" }
 ];
 
-// Función para escapar caracteres especiales en MarkdownV2
+// Escapar caracteres especiales de MarkdownV2
 function escapeMarkdown(text) {
     return text.replace(/([_*[\]()~`>#+\-=|{}.!])/g, "\\$1");
 }
@@ -34,15 +34,14 @@ async function consultarTodasLasAPIs() {
                 }
             });
 
-            // Unir todos los arrays válidos
             const arraysValidos = data.filter(item => Array.isArray(item) && item.length > 0);
             const todosCanales = [].concat(...arraysValidos);
 
-            // Canales con fallas: paréntesis distinto a (1)
+            // Canales con fallas (cualquier número distinto de 1)
             const canalesConFallas = todosCanales.filter(canal => /\(\d+\)/.test(canal) && !canal.includes("(1)"));
 
             if (canalesConFallas.length === 0) {
-                mensajes.push(`*${escapeMarkdown(pais.nombre)}*: ESTABLE`);
+                mensajes.push(`*${escapeMarkdown(pais.nombre)}*: OK`);
             } else {
                 mensajes.push(`*${escapeMarkdown(pais.nombre)}*:\n${canalesConFallas.map(c => escapeMarkdown(c)).join("\n")}`);
             }
