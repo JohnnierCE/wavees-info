@@ -50,19 +50,20 @@ async function consultarPais(pais) {
 
         let textoPais = "---------------------------\n";
 
-        if (canales.length > 0) {
-            textoPais += `${pais.nombre}:\n${canales.join("\n")}`;
-        } else if (indice6 === "1") {
-            textoPais += `${pais.nombre}:\nUTIL: 1`;
-        } else {
-            textoPais += `${pais.nombre}:\nTODO ESTABLE ✅`;
-        }
+if (canales.length > 0) {
+    textoPais += `${pais.nombre}:\n${canales.join("\n")}`;
+} else if (indice6 === "1") {
+    textoPais += `${pais.nombre}:\nUTIL: 1`;
+} else {
+    textoPais += `${pais.nombre}:\nTODO ESTABLE ✅`;
+}
 
-        if (alertas.length > 0) {
-            textoPais += "\n" + alertas.join("\n"); // <- solo 1 línea antes de alertas
-        }
+// Solo agregar alertas si existen
+if (alertas.length > 0) {
+    textoPais += "\n" + alertas.join("\n"); // <- un solo salto antes de alertas
+}
 
-        textoPais += "\n---------------------------";
+textoPais += "\n---------------------------"; // <- un solo separador
 
         return textoPais;
 
