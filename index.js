@@ -106,11 +106,6 @@ async function consultarTodasLasAPIs() {
             mensajes.push(`❌ *${pais.nombre}*: Error al consultar API (${error.message})`);
             hayProblemas = true;
         }
-
-        } catch (error) {
-            mensajes.push(`❌ *${pais.nombre}*: Error al consultar API (${error.message})`);
-            hayProblemas = true;
-        }
     }
 
     if (hayProblemas && mensajes.length > 0) {
