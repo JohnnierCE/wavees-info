@@ -30,12 +30,12 @@ async function consultarPais(pais) {
         });
 
         const canales = Array.isArray(softResp.data[pais.indice]) ? softResp.data[pais.indice] : [];
-        let canalesTexto = canales.length > 0 ? canales.join("\n") : "TODO ESTABLE";
+        let canalesTexto = canales.length > 0 ? canales.join("\n") : "TODO ESTABLE ✅";
 
         // Revisar índice 6 para UTIL
         const indice6 = Array.isArray(softResp.data[6]) ? softResp.data[6][0] : null;
         if (indice6 === "1") {
-            canalesTexto += "\n-⚠️\n*UTIL: 1*";
+            canalesTexto += "\n⚠️\n*UTIL: 1*";
         }
 
         // Obtener estado de discos
