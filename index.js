@@ -17,6 +17,11 @@ const PAISES = [
     { nombre: "UY", url: "https://uy.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "759361d51187fe9dbd526e0219a098b92d05249b29ee69778fb11e9e70cf7bdacec61f4e5b195d32948c5ba1b35dbb239a7286a69a687cbfe055d380a9209013" }
 ];
 
+// Función para escapar caracteres especiales en MarkdownV2
+function escapeMarkdown(text) {
+    return text.replace(/([_*[\]()~`>#+\-=|{}.!])/g, "\\$1");
+}
+
 async function consultarTodasLasAPIs() {
     let mensajes = [];
 
@@ -29,21 +34,21 @@ async function consultarTodasLasAPIs() {
                 }
             });
 
-            // Obtener todos los arrays válidos
+            // Unir todos los arrays válidos
             const arraysValidos = data.filter(item => Array.isArray(item) && item.length > 0);
             const todosCanales = [].concat(...arraysValidos);
 
-            // Filtrar solo los canales que NO estén estables (no tengan "(1)")
+            // Canales con fallas: paréntesis distinto a (1)
             const canalesConFallas = todosCanales.filter(canal => /\(\d+\)/.test(canal) && !canal.includes("(1)"));
 
             if (canalesConFallas.length === 0) {
-                mensajes.push(`*${pais.nombre}*: ESTABLE`);
+                mensajes.push(`*${escapeMarkdown(pais.nombre)}*: ESTABLE`);
             } else {
-                mensajes.push(`*${pais.nombre}*:\n${canalesConFallas.join("\n")}`);
+                mensajes.push(`*${escapeMarkdown(pais.nombre)}*:\n${canalesConFallas.map(c => escapeMarkdown(c)).join("\n")}`);
             }
 
         } catch (error) {
-            mensajes.push(`*${pais.nombre}*:\nError al consultar API (${error.message})`);
+            mensajes.push(`*${escapeMarkdown(pais.nombre)}*:\nError al consultar API (${escapeMarkdown(error.message)})`);
         }
     }
 
@@ -59,7 +64,7 @@ async function enviarTelegram(texto) {
         await axios.post(url, {
             chat_id: CHAT_ID,
             text: texto,
-            parse_mode: "Markdown"
+            parse_mode: "MarkdownV2"
         });
     } catch (error) {
         console.error("Error enviando mensaje a Telegram:", error.message);
