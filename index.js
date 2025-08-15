@@ -65,13 +65,28 @@ const PAISES = [
 function obtenerCanalesConProblemas(data) {
     const canalesConProblemas = [];
     
-    // Verificar posiciones que indican problemas: 0, 1, 3, 4, 5, 6, 7, 8
+    // Verificar posiciones que pueden contener problemas: 0, 1, 3, 4, 5, 6, 7, 8
     // La posición 2 es para canales funcionando normalmente
-    const posicionesProblemas = [0, 1, 3, 4, 5, 6, 7, 8];
+    const posicionesProblemas = [0, 1, 3, 5, 6, 7];
     
     posicionesProblemas.forEach((index) => {
         if (Array.isArray(data[index]) && data[index].length > 0) {
-            canalesConProblemas.push(...data[index]);
+            // Filtrar canales que realmente tienen problemas
+            const canalesEnPosicion = data[index].filter(canal => {
+                if (typeof canal !== 'string') return false;
+                
+                // Si el canal termina con [1], está funcionando correctamente
+                if (canal.endsWith('[1]')) return false;
+                
+                // Si el canal no tiene paréntesis ni corchetes, puede ser un resumen (como en GT posición 7)
+                // Estos generalmente son normales, no problemas
+                if (!/[\(\[\)]/g.test(canal)) return false;
+                
+                // Todo lo demás son problemas reales
+                return true;
+            });
+            
+            canalesConProblemas.push(...canalesEnPosicion);
         }
     });
     
