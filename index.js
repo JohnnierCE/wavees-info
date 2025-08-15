@@ -39,12 +39,12 @@ async function consultarPais(pais) {
             const alertasPC = [];
             const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
             if (primarioLibre < 10) {
-                alertasPC.push(`PC ${pc.id_pc} - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
+                alertasPC.push(`FEED ${pc.id_pc} - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
             }
 
             const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
             if (secundarioLibre < 5) {
-                alertasPC.push(`PC ${pc.id_pc} - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
+                alertasPC.push(`Feed ${pc.id_pc} - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
             }
 
             return alertasPC;
@@ -52,7 +52,8 @@ async function consultarPais(pais) {
 
         const discosTexto = alertas.length > 0 ? alertas.join("\n") : "DISCOS OK";
 
-        return `*${pais.nombre}*:\n${canalesTexto}\n\nEstado discos:\n${discosTexto}`;
+        // ✅ Solo mostramos los discos si hay alerta, sin el título "Estado discos:"
+        return `*${pais.nombre}*:\n${canalesTexto}${alertas.length > 0 ? "\n" + discosTexto : ""}`;
 
     } catch (err) {
         return `*${pais.nombre}*:\nError al consultar API (${err.message})`;
