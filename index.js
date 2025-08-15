@@ -62,31 +62,44 @@ const PAISES = [
     }
 ];
 
-function obtenerCanalesConProblemas(data) {
+function obtenerCanalesConProblemas(data, nombrePais) {
     const canalesConProblemas = [];
     
-    // Verificar posiciones que pueden contener problemas: 0, 1, 3, 4, 5, 6, 7, 8
+    // Verificar posiciones que pueden contener problemas: 0, 1, 3, 5, 6, 7
     // La posición 2 es para canales funcionando normalmente
     const posicionesProblemas = [0, 1, 3, 5, 6, 7];
     
     posicionesProblemas.forEach((index) => {
         if (Array.isArray(data[index]) && data[index].length > 0) {
-            // Filtrar canales que realmente tienen problemas
-            const canalesEnPosicion = data[index].filter(canal => {
-                if (typeof canal !== 'string') return false;
+            // Para GT y CR: filtrar canales que terminan con [1] y listas largas sin paréntesis
+            if ((nombrePais === 'GT' || nombrePais === 'CR') && (index === 5 || index === 7)) {
+                const canalesEnPosicion = data[index].filter(canal => {
+                    if (typeof canal !== 'string') return false;
+                    
+                    // Si termina con [1], está OK
+                    if (canal.endsWith('[1]')) return false;
+                    
+                    // Para GT y CR: si hay muchos canales sin paréntesis en pos 5/7, son resúmenes
+                    if (data[index].length > 10 && !/[\(\[\)]/g.test(canal)) return false;
+                    
+                    return true;
+                });
                 
-                // Si el canal termina con [1], está funcionando correctamente
-                if (canal.endsWith('[1]')) return false;
+                canalesConProblemas.push(...canalesEnPosicion);
+            } else {
+                // Para otros países: incluir todos los canales excepto los que terminan en [1]
+                const canalesEnPosicion = data[index].filter(canal => {
+                    if (typeof canal !== 'string') return false;
+                    
+                    // Si termina con [1], está OK
+                    if (canal.endsWith('[1]')) return false;
+                    
+                    // Todo lo demás son problemas
+                    return true;
+                });
                 
-                // Si el canal no tiene paréntesis ni corchetes, puede ser un resumen (como en GT posición 7)
-                // Estos generalmente son normales, no problemas
-                if (!/[\(\[\)]/g.test(canal)) return false;
-                
-                // Todo lo demás son problemas reales
-                return true;
-            });
-            
-            canalesConProblemas.push(...canalesEnPosicion);
+                canalesConProblemas.push(...canalesEnPosicion);
+            }
         }
     });
     
@@ -107,7 +120,7 @@ async function consultarTodasLasAPIs() {
             });
 
             // Obtener canales con problemas según las posiciones del array
-            const canalesConProblemas = obtenerCanalesConProblemas(data);
+            const canalesConProblemas = obtenerCanalesConProblemas(data, pais.nombre);
             
             if (canalesConProblemas.length > 0) {
                 // Remover duplicados manteniendo el orden
