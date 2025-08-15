@@ -4,7 +4,7 @@ const TELEGRAM_TOKEN = "8308992460:AAHoSoA9rWhHJCt9FuX2RkdBCVhmdnSX6d8";
 const CHAT_ID = "5703312558";
 
 const PAIS = {
-    nombre: "*RD*",
+    nombre: "RD",
     token: "7c0a5d5e456db8b238879426b52d504ecd087a98c574d69d63ffb3868cf6f9b8c30ff4fbda7a265c91e70769b90497c07335cb02d0af8eca7f94a724103aaa80",
     indice: 3
 };
@@ -39,20 +39,21 @@ async function consultarPais(pais) {
             const alertasPC = [];
             const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
             if (primarioLibre < 10) {
-                alertasPC.push(`*FEED* ${pc.id_pc}* - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
+                alertasPC.push(`FEED ${pc.id_pc} - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
             }
 
             const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
             if (secundarioLibre < 5) {
-                alertasPC.push(`*FEED* ${pc.id_pc}* - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
+                alertasPC.push(`FEED ${pc.id_pc} - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
             }
 
             return alertasPC;
         }).flat().filter(Boolean);
 
+        // Mostrar "DISCOS OK" si no hay alertas
         const discosTexto = alertas.length > 0 ? alertas.join("\n") : "DISCOS OK";
 
-        // ✅ Mostramos canales y solo los discos en alerta si existen
+        // País en negrita para Telegram, alertas sin Markdown
         return `*${pais.nombre}*:\n${canalesTexto}${alertas.length > 0 ? "\n" + discosTexto : ""}`;
 
     } catch (err) {
@@ -69,7 +70,11 @@ async function ejecutarPrueba() {
 async function enviarTelegram(texto) {
     try {
         const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
-        await axios.post(url, { chat_id: CHAT_ID, text: texto, parse_mode: "Markdown" });
+        await axios.post(url, {
+            chat_id: CHAT_ID,
+            text: texto,
+            parse_mode: "Markdown" // Telegram interpreta la negrita del país
+        });
     } catch (error) {
         console.error("Error enviando mensaje a Telegram:", error.message);
     }
