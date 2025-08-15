@@ -15,7 +15,7 @@ function toGB(bytes) {
 
 async function consultarPais(pais) {
     try {
-        // 1️⃣ Canales
+        // 1️⃣ Obtener canales
         const softResp = await axios.get(`https://${pais.nombre.toLowerCase()}.integra-metrics.com/api/v2/estado-soft?data={}`, {
             headers: { "Authorization": `Bearer ${pais.token}`, "Accept": "application/json" }
         });
@@ -23,39 +23,34 @@ async function consultarPais(pais) {
         const canales = Array.isArray(softResp.data[pais.indice]) ? softResp.data[pais.indice] : [];
         const canalesTexto = canales.length > 0 ? canales.join("\n") : "TODO ESTABLE";
 
-        // 2️⃣ Estado discos / RAM / inodos
+        // 2️⃣ Obtener estado de discos
         const feedsResp = await axios.get(`https://${pais.nombre.toLowerCase()}.integra-metrics.com/api/v2/estado-feeds?data={"time":"1 hours"}`, {
             headers: { "Authorization": `Bearer ${pais.token}`, "Accept": "application/json" }
         });
 
+        // Tomar solo el último registro por PC
         const latestPerPc = Object.values(feedsResp.data)
             .flat()
             .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
             .reduce((acc, curr) => { if (!acc[curr.id_pc]) acc[curr.id_pc] = curr; return acc; }, {});
 
-        // Analizar alertas
-        const alertas = Object.values(latestPerPc).filter(pc => {
+        // Solo mostrar discos que estén en alerta
+        const alertas = Object.values(latestPerPc).map(pc => {
+            const alertasPC = [];
             const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
+            if (primarioLibre < 10) {
+                alertasPC.push(`PC ${pc.id_pc} - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
+            }
+
             const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
-            return primarioLibre < 10 || secundarioLibre < 5;
-        });
+            if (secundarioLibre < 5) {
+                alertasPC.push(`PC ${pc.id_pc} - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
+            }
 
-        const discosTexto = alertas.length > 0 
-            ? alertas.map(pc => {
-                const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
-                const primarioTotal = toGB(pc.primary_disk_total);
-                const primarioStatus = primarioLibre >= 10 ? "OK" : "ALERTA";
+            return alertasPC;
+        }).flat().filter(Boolean);
 
-                const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
-                const secundarioTotal = toGB(pc.secondary_disk_total);
-                const secundarioStatus = secundarioLibre >= 5 ? "OK" : "ALERTA";
-
-                const ramLibre = toGB(pc.ram_total - pc.ram_used);
-                const inodos = (100 - pc.inodes_free).toFixed(2);
-
-                return `- PC ${pc.id_pc}: Primario ${primarioStatus} (${primarioLibre}/${primarioTotal} GB), Secundario ${secundarioStatus} (${secundarioLibre}/${secundarioTotal} GB), RAM libre ${ramLibre} GB, Inodos ${inodos}%`;
-            }).join("\n")
-            : "DISCOS OK";
+        const discosTexto = alertas.length > 0 ? alertas.join("\n") : "DISCOS OK";
 
         return `*${pais.nombre}*:\n${canalesTexto}\n\nEstado discos:\n${discosTexto}`;
 
