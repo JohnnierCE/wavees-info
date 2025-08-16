@@ -3,6 +3,7 @@ const axios = require("axios");
 const TELEGRAM_TOKEN = "8308992460:AAHoSoA9rWhHJCt9FuX2RkdBCVhmdnSX6d8";
 const CHAT_ID = "5703312558";
 
+// Lista completa de países
 const PAISES = [
     { nombre: "RD", url: "https://rd.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "7c0a5d5e456db8b238879426b52d504ecd087a98c574d69d63ffb3868cf6f9b8c30ff4fbda7a265c91e70769b90497c07335cb02d0af8eca7f94a724103aaa80", indice: 3 },
     { nombre: "CO", url: "https://co.integra-metrics.com/api/v2/estado-soft?data=%7B%7D", token: "784531556743bc5d76129cfc057413dd73563372e896da054ed5e2856e760c20f90943f8b7deaa28ed7b3d559141329838955b1140a921d255af1e038cf917ed", indice: 3 },
@@ -23,21 +24,18 @@ function toGB(bytes) {
 
 async function consultarPais(pais) {
     try {
+        // Obtener canales
         const softResp = await axios.get(pais.url, {
             headers: { "Authorization": `Bearer ${pais.token}`, "Accept": "application/json" }
         });
 
         const canales = Array.isArray(softResp.data[pais.indice]) ? softResp.data[pais.indice] : [];
-        const indice6 = Array.isArray(softResp.data[6]) ? softResp.data[6][0] : null;
+        let canalesTexto = canales.length > 0 ? canales.join("\n") : "TODO ESTABLE ✅";
 
-        // Construir texto del país
-        let textoPais = `*${pais.nombre}*:\n`;
-        if (canales.length > 0) {
-            textoPais += canales.join("\n");
-        } else if (indice6 === "1") {
-            textoPais += "*UTIL: 1*";
-        } else {
-            textoPais += "TODO ESTABLE ✅";
+        // Revisar índice 6 para UTIL
+        const indice6 = Array.isArray(softResp.data[6]) ? softResp.data[6][0] : null;
+        if (indice6 === "1") {
+            canalesTexto += "\n⚠️\n*UTIL: 1*\n⚠️";
         }
 
         // Obtener estado de discos
@@ -50,20 +48,25 @@ async function consultarPais(pais) {
             .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
             .reduce((acc, curr) => { if (!acc[curr.id_pc]) acc[curr.id_pc] = curr; return acc; }, {});
 
-        const alertas = Object.values(latestPerPc).map(pc => {
-            const lista = [];
-            const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
-            if (primarioLibre < 10) lista.push(`FEED ${pc.id_pc} - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
-            const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
-            if (secundarioLibre < 5) lista.push(`FEED ${pc.id_pc} - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
-            return lista;
-        }).flat();
+    // Solo mostrar discos en alerta
+const alertas = Object.values(latestPerPc).map(pc => {
+    const alertasPC = [];
+    const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
+    if (primarioLibre < 10) alertasPC.push(`FEED ${pc.id_pc} 💽 - Primario ALERTA (${primarioLibre}/${toGB(pc.primary_disk_total)} GB)`);
 
-        if (alertas.length > 0) {
-            textoPais += "\n" + alertas.join("\n");
-        }
+    const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
+    if (secundarioLibre < 5) alertasPC.push(`FEED ${pc.id_pc} 💽 - Secundario ALERTA (${secundarioLibre}/${toGB(pc.secondary_disk_total)} GB)`);
 
-        return textoPais;
+    // Si hay alertas, poner el ⚠️ arriba y abajo
+    if (alertasPC.length > 0) {
+        alertasPC.unshift(" "); // arriba
+        alertasPC.push(" ");    // abajo
+    }
+
+    return alertasPC;
+}).flat().filter(Boolean);
+
+        return `*${pais.nombre}*:\n${canalesTexto}${alertas.length > 0 ? "\n" + alertas.join("\n") : ""}`;
 
     } catch (err) {
         return `*${pais.nombre}*:\nError al consultar API (${err.message})`;
@@ -77,7 +80,6 @@ async function ejecutarPrueba() {
         mensajes.push(msg);
     }
 
-    // Separar países con 1 línea vacía
     await enviarTelegram(mensajes.join("\n\n"));
     console.log("Mensajes enviados a Telegram");
 }
@@ -91,5 +93,8 @@ async function enviarTelegram(texto) {
     }
 }
 
+// Ejecutar cada 5 minutos
 setInterval(ejecutarPrueba, 300000);
+
+// Primera ejecución inmediata
 ejecutarPrueba();
