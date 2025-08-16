@@ -30,7 +30,7 @@ async function consultarPais(pais) {
         });
 
         const canales = Array.isArray(softResp.data[pais.indice]) ? softResp.data[pais.indice] : [];
-        let canalesTexto = canales.length > 0 ? canales.join("\n") : "TODO ESTABLE ✅";
+        let canalesTexto = canales.length > 0 ? canales.join("\n") : "TODO ESTABLE";
 
         // Revisar índice 6 para UTIL
         const indice6 = Array.isArray(softResp.data[6]) ? softResp.data[6][0] : null;
@@ -52,10 +52,10 @@ async function consultarPais(pais) {
 const alertas = Object.values(latestPerPc).map(pc => {
     const alertasPC = [];
     const primarioLibre = toGB(pc.primary_disk_total - pc.primary_disk_used);
-    if (primarioLibre < 10) alertasPC.push(`FEED ${pc.id_pc} DISCO PRIMARIO EN ALERTA (${primarioLibre} DISPONIBLE DE ${toGB(pc.primary_disk_total)} GB)`);
+    if (primarioLibre < 10) alertasPC.push(`FEED ${pc.id_pc} DISCO PRIMARIO EN ALERTA (${primarioLibre} GB DISPONIBLES DE ${toGB(pc.primary_disk_total)} GB)`);
 
     const secundarioLibre = toGB(pc.secondary_disk_total - pc.secondary_disk_used);
-    if (secundarioLibre < 5) alertasPC.push(`FEED ${pc.id_pc} DISCO SECUNDARIO EN ALERTA (${secundarioLibre} DISPONIBLE DE ${toGB(pc.secondary_disk_total)} GB)`);
+    if (secundarioLibre < 5) alertasPC.push(`FEED ${pc.id_pc} DISCO SECUNDARIO EN ALERTA (${secundarioLibre} GB DISPONIBLES DE ${toGB(pc.secondary_disk_total)} GB)`);
 
     // Si hay alertas, poner el ⚠️ arriba y abajo
     if (alertasPC.length > 0) {
